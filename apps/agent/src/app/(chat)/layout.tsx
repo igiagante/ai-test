@@ -6,9 +6,9 @@ import {
   SidebarProvider,
 } from "@workspace/ui/components/sidebar";
 
-import { auth } from "../(auth)/auth";
 import Script from "next/script";
-
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 export const experimental_ppr = true;
 
 export default async function Layout({
@@ -16,10 +16,12 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const [session, cookieStore] = await Promise.all([auth(), cookies()]);
+  const [user, cookieStore] = await Promise.all([currentUser(), cookies()]);
   const isCollapsed = cookieStore.get("sidebar:state")?.value !== "true";
 
-  console.log("session", session);
+  if (!user) {
+    redirect("/sign-in");
+  }
 
   return (
     <>
@@ -28,7 +30,7 @@ export default async function Layout({
         strategy="beforeInteractive"
       />
       <SidebarProvider defaultOpen={!isCollapsed}>
-        <AppSidebar user={session?.user} />
+        {user && <AppSidebar />}
         <SidebarInset>{children}</SidebarInset>
       </SidebarProvider>
     </>

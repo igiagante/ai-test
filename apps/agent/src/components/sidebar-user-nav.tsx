@@ -1,8 +1,6 @@
 "use client";
 import { ChevronUp } from "lucide-react";
 import Image from "next/image";
-import type { User } from "next-auth";
-import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
 
 import {
@@ -17,6 +15,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
+import { SignOutButton } from "@clerk/nextjs";
+import { User } from "@/lib/db/schema";
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
@@ -42,6 +42,9 @@ export function SidebarUserNav({ user }: { user: User }) {
             side="top"
             className="w-[--radix-popper-anchor-width]"
           >
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <a href="/profile">Profile settings</a>
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="cursor-pointer"
               onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -50,17 +53,11 @@ export function SidebarUserNav({ user }: { user: User }) {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <button
-                type="button"
-                className="w-full cursor-pointer"
-                onClick={() => {
-                  signOut({
-                    redirectTo: "/",
-                  });
-                }}
-              >
-                Sign out
-              </button>
+              <SignOutButton>
+                <button type="button" className="w-full cursor-pointer">
+                  Sign out
+                </button>
+              </SignOutButton>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
